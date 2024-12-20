@@ -103,6 +103,11 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
     }
 
     @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        if (visibility != View.GONE && visibility != View.INVISIBLE) super.onWindowVisibilityChanged(visibility);
+    }
+
+    @Override
     public void onHostResume() {
         // do nothing
     }
