@@ -18,12 +18,10 @@ import androidx.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -78,7 +76,8 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
      */
     public RNCWebView(ThemedReactContext reactContext) {
         super(reactContext);
-        mMessagingJSModule = ((ThemedReactContext) this.getContext()).getReactApplicationContext().getJSModule(RNCWebViewMessagingModule.class);
+        ReactApplicationContext appContext = reactContext.getReactApplicationContext();
+        mMessagingJSModule = new RNCWebViewMessagingModule(appContext);
         progressChangedFilter = new ProgressChangedFilter();
     }
 
@@ -334,16 +333,21 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
         event.putMap("nativeEvent", data);
         event.putString("messagingModuleName", messagingModuleName);
 
-        mMessagingJSModule.onMessage(event);
+        ReactContext reactContext = getReactApplicationContext();
+        if (mMessagingJSModule != null && reactContext != null) {
+            mMessagingJSModule.sendEvent(reactContext, "onMessage", event);
+        }
     }
 
-    protected boolean dispatchDirectShouldStartLoadWithRequest(WritableMap data) {
+    protected void dispatchDirectShouldStartLoadWithRequest(WritableMap data) {
         WritableNativeMap event = new WritableNativeMap();
         event.putMap("nativeEvent", data);
         event.putString("messagingModuleName", messagingModuleName);
 
-        mMessagingJSModule.onShouldStartLoadWithRequest(event);
-        return true;
+        ReactContext reactContext = getReactApplicationContext();
+        if (mMessagingJSModule != null && reactContext != null) {
+            mMessagingJSModule.sendEvent(reactContext, "onShouldStartLoadWithRequest", event);
+        }
     }
 
     protected void onScrollChanged(int x, int y, int oldX, int oldY) {

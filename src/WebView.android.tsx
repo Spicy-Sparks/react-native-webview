@@ -7,10 +7,13 @@ import React, {
   useRef,
 } from 'react';
 
-import { Image, View, ImageSourcePropType, HostComponent } from 'react-native';
-
-import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import {
+  Image,
+  View,
+  ImageSourcePropType,
+  HostComponent,
+  NativeEventEmitter,
+} from 'react-native';
 
 import invariant from 'invariant';
 
@@ -33,27 +36,7 @@ import styles from './WebView.styles';
 
 const { resolveAssetSource } = Image;
 
-const directEventEmitter = new EventEmitter();
-
-const registerCallableModule: (name: string, module: Object) => void =
-  // `registerCallableModule()` is available in React Native 0.74 and above.
-  // Fallback to use `BatchedBridge.registerCallableModule()` for older versions.
-
-  require('react-native').registerCallableModule ??
-  BatchedBridge.registerCallableModule.bind(BatchedBridge);
-
-registerCallableModule('RNCWebViewMessagingModule', {
-  onShouldStartLoadWithRequest: (
-    event: ShouldStartLoadRequestEvent & { messagingModuleName?: string }
-  ) => {
-    directEventEmitter.emit('onShouldStartLoadWithRequest', event);
-  },
-  onMessage: (
-    event: WebViewMessageEvent & { messagingModuleName?: string }
-  ) => {
-    directEventEmitter.emit('onMessage', event);
-  },
-});
+const directEventEmitter = new NativeEventEmitter(RNCWebViewModule);
 
 /**
  * A simple counter to uniquely identify WebView instances. Do not use this for anything else.
