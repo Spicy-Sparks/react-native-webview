@@ -9,6 +9,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTAutoInsetsProtocol.h>
 #import "RNCWKProcessPoolManager.h"
+#import "CustomSchemeHandler.h"
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
@@ -500,6 +501,10 @@ RCTAutoInsetsProtocol>
   if (_applicationNameForUserAgent) {
     wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
   }
+
+  CustomSchemeHandler *handler = [[CustomSchemeHandler alloc] init];
+  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"http"];
+  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"https"];
 
   return wkWebViewConfig;
 }
