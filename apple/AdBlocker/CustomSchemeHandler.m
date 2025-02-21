@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "CustomSchemeHandler.h"
 #import "AdblockRust.h"
+#import <TargetConditionals.h>
 
 @implementation CustomSchemeHandler
 
@@ -9,10 +10,13 @@
 //    NSLog(@"[CustomSchemeHandler] Intercepted request: %@", url.absoluteString);
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+#if TARGET_OS_IOS
         bool shouldBlock = create_engine_and_check_request_c([url.absoluteString UTF8String],
                                                              [@"" UTF8String], // source_url
                                                              "other"); // requestType
-        
+#else
+        bool shouldBlock = false;
+#endif
         dispatch_async(dispatch_get_main_queue(), ^{
             if (shouldBlock) {
 //                NSLog(@"[CustomSchemeHandler] Blocking request: %@", url.absoluteString);
