@@ -8,6 +8,15 @@ extern "C" {
 
 bool create_engine_and_check_request_c(const char *url, const char *source_url, const char *request_type);
 
+typedef struct {
+    char *rules_json;
+    int truncated;
+} CContentBlockingRules;
+
+CContentBlockingRules *convert_rules_to_content_blocking_c(const char *rules);
+
+void free_content_blocking_rules(CContentBlockingRules *rules);
+
 #ifdef __cplusplus
 }
 #endif

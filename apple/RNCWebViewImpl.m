@@ -9,7 +9,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTAutoInsetsProtocol.h>
 #import "RNCWKProcessPoolManager.h"
-#import "CustomSchemeHandler.h"
+#import "ContentBlocker.h"
+//#import "CustomSchemeHandler.h"
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
@@ -502,9 +503,36 @@ RCTAutoInsetsProtocol>
     wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
   }
 
-  CustomSchemeHandler *handler = [[CustomSchemeHandler alloc] init];
-  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"http"];
-  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"https"];
+  NSURL *filterListURL = [[NSBundle mainBundle] URLForResource:@"easylist" withExtension:@"txt"];
+
+  if (filterListURL) {
+      NSError *error = nil;
+      NSString *filterSet = [NSString stringWithContentsOfURL:filterListURL
+                                                      encoding:NSUTF8StringEncoding
+                                                        error:&error];
+
+      if (filterSet) {
+          ContentBlockerResult *rules = [ContentBlocker contentBlockerRulesFromFilterSet:filterSet error:&error];
+
+          if (rules && rules.rulesJSON && [rules.rulesJSON length] > 0) {
+              WKContentRuleListStore *store = [WKContentRuleListStore defaultStore];
+
+              if (store) {
+                  [store compileContentRuleListForIdentifier:@"blocker-identifier"
+                                    encodedContentRuleList:rules.rulesJSON
+                                        completionHandler:^(WKContentRuleList * _Nullable contentRuleList, NSError * _Nullable error) {
+                      if (contentRuleList && wkWebViewConfig.userContentController) {
+                          [wkWebViewConfig.userContentController addContentRuleList:contentRuleList];
+                      }
+                  }];
+              }
+          }
+      }
+  }
+
+  //  CustomSchemeHandler *handler = [[CustomSchemeHandler alloc] init];
+  //  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"http"];
+  //  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"https"];
 
   return wkWebViewConfig;
 }

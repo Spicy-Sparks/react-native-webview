@@ -1,9 +1,9 @@
-#ifndef WKWebView_Hook_h
-#define WKWebView_Hook_h
+// #ifndef WKWebView_Hook_h
+// #define WKWebView_Hook_h
 
-#endif /* WKWebView_Hook_h */
+// #endif /* WKWebView_Hook_h */
 
-#import <WebKit/WebKit.h>
+// #import <WebKit/WebKit.h>
 
-@interface WKWebView (Hook)
-@end
+// @interface WKWebView (Hook)
+// @end
