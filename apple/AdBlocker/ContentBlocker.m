@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "ContentBlocker.h"
 #import "AdblockRust.h"
+#import <TargetConditionals.h>
 
 @implementation ContentBlockerResult
 
