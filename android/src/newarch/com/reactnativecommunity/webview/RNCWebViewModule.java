@@ -29,6 +29,12 @@ public class RNCWebViewModule extends NativeRNCWebViewModuleSpec {
         mRNCWebViewModuleImpl.shouldStartLoadWithLockIdentifier(shouldStart, lockIdentifier);
     }
 
+    @Override
+    public void addListener(String eventType) {}
+
+    @Override
+    public void removeListeners(double count) {}
+
     public void startPhotoPickerIntent(ValueCallback<Uri> filePathCallback, String acceptType) {
         mRNCWebViewModuleImpl.startPhotoPickerIntent(acceptType, filePathCallback);
     }

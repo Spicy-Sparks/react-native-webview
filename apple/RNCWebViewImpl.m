@@ -128,6 +128,7 @@ RCTAutoInsetsProtocol>
 @property (nonatomic, strong) WKUserScript *injectedObjectJsonScript;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
+@property (nonatomic, strong) NSTimer *keepWebViewActiveTimer;
 @end
 
 @implementation RNCWebViewImpl
@@ -537,6 +538,12 @@ RCTAutoInsetsProtocol>
   return wkWebViewConfig;
 }
 
+- (void)_keepWKWebViewActive:(NSTimer*) timer {
+    if (_webView) {
+        [_webView evaluateJavaScript:@"1+1" completionHandler:nil];
+    }
+}
+
 - (void)didMoveToWindow
 {
   if (self.window != nil && _webView == nil) {
@@ -591,6 +598,12 @@ RCTAutoInsetsProtocol>
     [self setHideKeyboardAccessoryView: _savedHideKeyboardAccessoryView];
     [self setKeyboardDisplayRequiresUserAction: _savedKeyboardDisplayRequiresUserAction];
     [self visitSource];
+
+    self.keepWebViewActiveTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                    target:self
+                                    selector:@selector(_keepWKWebViewActive:)
+                                    userInfo:nil
+                                    repeats:YES];
   }
 
 #if !TARGET_OS_OSX
