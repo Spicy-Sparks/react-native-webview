@@ -9,8 +9,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTAutoInsetsProtocol.h>
 #import "RNCWKProcessPoolManager.h"
-#import "ContentBlocker.h"
-//#import "CustomSchemeHandler.h"
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
@@ -503,37 +501,29 @@ RCTAutoInsetsProtocol>
   if (_applicationNameForUserAgent) {
     wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
   }
+    
+  NSURL *jsonFileURL = [[NSBundle mainBundle] URLForResource:@"rulelist" withExtension:@"json"];
 
-  NSURL *filterListURL = [[NSBundle mainBundle] URLForResource:@"easylist" withExtension:@"txt"];
+  if (jsonFileURL) {
+    NSError *error = nil;
+    NSString *jsonRules = [NSString stringWithContentsOfURL:jsonFileURL
+                                                   encoding:NSUTF8StringEncoding
+                                                      error:&error];
 
-  if (filterListURL) {
-      NSError *error = nil;
-      NSString *filterSet = [NSString stringWithContentsOfURL:filterListURL
-                                                      encoding:NSUTF8StringEncoding
-                                                        error:&error];
+    if (jsonRules && jsonRules.length > 0) {
+      WKContentRuleListStore *store = [WKContentRuleListStore defaultStore];
 
-      if (filterSet) {
-          ContentBlockerResult *rules = [ContentBlocker contentBlockerRulesFromFilterSet:filterSet error:&error];
-
-          if (rules && rules.rulesJSON && [rules.rulesJSON length] > 0) {
-              WKContentRuleListStore *store = [WKContentRuleListStore defaultStore];
-
-              if (store) {
-                  [store compileContentRuleListForIdentifier:@"blocker-identifier"
-                                    encodedContentRuleList:rules.rulesJSON
-                                        completionHandler:^(WKContentRuleList * _Nullable contentRuleList, NSError * _Nullable error) {
-                      if (contentRuleList && wkWebViewConfig.userContentController) {
-                          [wkWebViewConfig.userContentController addContentRuleList:contentRuleList];
-                      }
-                  }];
-              }
+      if (store) {
+        [store compileContentRuleListForIdentifier:@"rules-identifier"
+                            encodedContentRuleList:jsonRules
+                                 completionHandler:^(WKContentRuleList * _Nullable contentRuleList, NSError * _Nullable error) {
+          if (contentRuleList && wkWebViewConfig.userContentController) {
+              [wkWebViewConfig.userContentController addContentRuleList:contentRuleList];
           }
+        }];
       }
+    }
   }
-
-  //  CustomSchemeHandler *handler = [[CustomSchemeHandler alloc] init];
-  //  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"http"];
-  //  [wkWebViewConfig setURLSchemeHandler:handler forURLScheme:@"https"];
 
   return wkWebViewConfig;
 }
