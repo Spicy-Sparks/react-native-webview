@@ -294,6 +294,7 @@ export interface CommonNativeWebViewProps extends ViewProps {
   injectedJavaScriptBeforeContentLoadedForMainFrameOnly?: boolean;
   javaScriptCanOpenWindowsAutomatically?: boolean;
   mediaPlaybackRequiresUserAction?: boolean;
+  contentBlockerEnabled?: boolean;
   webviewDebuggingEnabled?: boolean;
   messagingEnabled: boolean;
   onScroll?: (event: WebViewScrollEvent) => void;
@@ -1282,6 +1283,11 @@ export interface WebViewSharedProps extends ViewProps {
    * to tap them before they start playing. The default value is `true`.
    */
   mediaPlaybackRequiresUserAction?: boolean;
+
+  /**
+   * Boolean value to enable content blocker
+   */
+  contentBlockerEnabled?: boolean;
 
   /**
    * List of origin strings to allow being navigated to. The strings allow

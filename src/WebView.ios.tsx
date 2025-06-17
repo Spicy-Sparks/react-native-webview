@@ -83,6 +83,7 @@ const WebViewComponent = forwardRef<{}, IOSWebViewProps>(
       allowsPictureInPictureMediaPlayback = true,
       allowsAirPlayForMediaPlayback,
       mediaPlaybackRequiresUserAction,
+      contentBlockerEnabled,
       dataDetectorTypes,
       incognito,
       decelerationRate: decelerationRateProp,
@@ -177,6 +178,7 @@ const WebViewComponent = forwardRef<{}, IOSWebViewProps>(
       mediaPlaybackRequiresUserAction,
       'mediaPlaybackRequiresUserAction'
     );
+    useWarnIfChanges(contentBlockerEnabled, 'contentBlockerEnabled');
     useWarnIfChanges(dataDetectorTypes, 'dataDetectorTypes');
 
     let otherView = null;
@@ -272,6 +274,7 @@ const WebViewComponent = forwardRef<{}, IOSWebViewProps>(
         }
         incognito={incognito}
         mediaPlaybackRequiresUserAction={mediaPlaybackRequiresUserAction}
+        contentBlockerEnabled={contentBlockerEnabled}
         newSource={newSource}
         style={webViewStyles}
         hasOnFileDownload={!!onFileDownload}

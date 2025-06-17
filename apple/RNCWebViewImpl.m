@@ -502,25 +502,27 @@ RCTAutoInsetsProtocol>
     wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
   }
     
-  NSURL *jsonFileURL = [[NSBundle mainBundle] URLForResource:@"filteringRules" withExtension:@"json"];
+  if (_contentBlockerEnabled) {
+    NSURL *jsonFileURL = [[NSBundle mainBundle] URLForResource:@"filteringRules" withExtension:@"json"];
 
-  if (jsonFileURL) {
-    NSError *error = nil;
-    NSString *jsonRules = [NSString stringWithContentsOfURL:jsonFileURL
-                                                   encoding:NSUTF8StringEncoding
-                                                      error:&error];
+    if (jsonFileURL) {
+      NSError *error = nil;
+      NSString *jsonRules = [NSString stringWithContentsOfURL:jsonFileURL
+                                                     encoding:NSUTF8StringEncoding
+                                                        error:&error];
 
-    if (jsonRules && jsonRules.length > 0) {
-      WKContentRuleListStore *store = [WKContentRuleListStore defaultStore];
+      if (jsonRules && jsonRules.length > 0) {
+        WKContentRuleListStore *store = [WKContentRuleListStore defaultStore];
 
-      if (store) {
-        [store compileContentRuleListForIdentifier:@"filtering-rules-id"
-                            encodedContentRuleList:jsonRules
-                                 completionHandler:^(WKContentRuleList * _Nullable contentRuleList, NSError * _Nullable error) {
-          if (contentRuleList && wkWebViewConfig.userContentController) {
-              [wkWebViewConfig.userContentController addContentRuleList:contentRuleList];
-          }
-        }];
+        if (store) {
+          [store compileContentRuleListForIdentifier:@"filtering-rules-id"
+                              encodedContentRuleList:jsonRules
+                                   completionHandler:^(WKContentRuleList * _Nullable contentRuleList, NSError * _Nullable error) {
+            if (contentRuleList && wkWebViewConfig.userContentController) {
+                [wkWebViewConfig.userContentController addContentRuleList:contentRuleList];
+            }
+          }];
+        }
       }
     }
   }
