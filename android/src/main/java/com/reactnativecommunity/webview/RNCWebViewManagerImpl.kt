@@ -539,6 +539,11 @@ class RNCWebViewManagerImpl(private val newArch: Boolean = false) {
         val view = viewWrapper.webView
         view.settings.mediaPlaybackRequiresUserGesture = value
     }
+    
+    fun setContentBlockerEnabled(viewWrapper: RNCWebViewWrapper, value: Boolean) {
+        val view = viewWrapper.webView
+        view.settings.contentBlockerEnabled = value
+    }
 
     fun setHasOnScroll(viewWrapper: RNCWebViewWrapper, value: Boolean) {
         val view = viewWrapper.webView

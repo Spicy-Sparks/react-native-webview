@@ -220,6 +220,12 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     }
 
     @Override
+    @ReactProp(name = "contentBlockerEnabled")
+    public void setContentBlockerEnabled(RNCWebViewWrapper view, boolean value) {
+        mRNCWebViewManagerImpl.setContentBlockerEnabled(view, value);
+    }
+
+    @Override
     @ReactProp(name = "menuItems")
     public void setMenuItems(RNCWebViewWrapper view, @Nullable ReadableArray items) {
         mRNCWebViewManagerImpl.setMenuCustomItems(view, items);
